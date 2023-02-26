@@ -1,0 +1,145 @@
+<div class="ChallengeDescriptionCard__header"><h2>Differentiable ZNE: Error-mitigated VQE</h2><h2>500 points</h2></div>
+<div class="max-h-36 overflow-x-auto transition-all duration-500 max-h-[250rem]"><div class="ChallengeDescriptionCard__markdown"><p>At this point, you've been exposed to modelling noise in a quantum circuit and how to amplify a circuit's noise via global circuit folding. In this challenge, you will pioneer a way to perform an error-mitigated version of a quintessential quantum algorithm on noisy hardware!</p>
+<p>The variational quantum eigensolver (VQE) algorithm is an elegant optimization algorithm that estimates the ground state and ground state energy of a Hamiltonian. The Hamiltonian could describe anything, so long as there's an efficient map to mapping the degrees of freedom to binary variables. Here, we'll use the qubit representation of the molecular hydrogen Hamiltonian. Go check out <a href="https://pennylane.ai/qml/demos/tutorial_quantum_chemistry.html" target="_blank">our popular demo</a> on performing VQE with this Hamiltonian!</p>
+<p>Here, you will perform:</p>
+<ul>
+<li>an "ideal" VQE routine (no noise present at all)</li>
+<li>three error-ridden VQE routines</li>
+<li>an extrapolation to zero-noise given the three error-ridden VQE routines</li>
+</ul>
+<p align="center">
+<img src="https://s3.us-east-1.amazonaws.com/grader-service-content-production/challenge-images/pioneer_differentiable_ZNE/noisy_vqe.png" alt="drawing" width="450">
+</p>
+<p>The three error-ridden VQE routines must be constructed from a noisy device, where a depolarizing channel is present on <em>all</em> gates. There, you will employ PennyLane's builtin global circuit folding protocol that can be implemented via transforming a noisy QNode: <a href="https://docs.pennylane.ai/en/stable/code/api/pennylane.transforms.fold_global.html?highlight=qml.transforms.fold_global" target="_blank"><code>qml.transforms.fold_global</code></a>.</p>
+<h2>Challenge code</h2>
+<p>The provided code below contains a few functions:</p>
+<ul>
+<li><code>hydrogen_hamiltonian</code>: this function creates the Hamiltonian describing the H<span class="math math-inline"><mjx-container classname="MathJax" jax="SVG"><svg xmlns="http://www.w3.org/2000/svg" width="0.988ex" height="1.065ex" role="img" focusable="false" viewBox="0 -320.9 436.6 470.9" xmlns:xlink="http://www.w3.org/1999/xlink" style="vertical-align: -0.339ex;"><defs><path id="MJX-1-TEX-N-32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"></g><g data-mml-node="mn" transform="translate(33,-150) scale(0.707)"><use data-c="32" xlink:href="#MJX-1-TEX-N-32"></use></g></g></g></g></svg></mjx-container></span> molecule given a hydrogen-to-hydrogen distance <code>d</code>.</li>
+<li><code>ansatz_template</code>: this is a quantum function that defines the ansatz for all VQE routines that you will perform.</li>
+<li><code>VQE</code>: this function performs a VQE routine given a QNode that you created with <code>qnode_ansatzes</code>.</li>
+<li><code>qnode_ansatzes</code>: employs <code>ansatz_template</code> to create QNodes given different devices: an ideal device (no noise) and "mitigated" devices that are global-circuit-folding transformed devices. <strong>You must complete this function</strong>.</li>
+<li><code>extrapolation</code>: this is where the magic happens; all VQE routines run, and then the zero-noise extrapolation takes place. <strong>You must complete this function</strong>.</li>
+</ul>
+<p>The three error-ridden VQE routines that you perform are tied to three different <em>scale factors</em>. The scale factors define the global circuit folding procedure, and more information can be found in the documentation for <a href="https://docs.pennylane.ai/en/stable/code/api/pennylane.transforms.fold_global.html?highlight=qml.transforms.fold_global" target="_blank"><code>qml.transforms.fold_global</code></a>. When you perform the extrapolation, you will be fitting a second-degree polynomial function (a quadratic function) to VQE energies versus scale factors.</p>
+<h3>Input</h3>
+<p>As input to this problem, you will be given <code>d</code>, the hydrogen-to-hydrogen distance that defines its molecular Hamiltonian.</p>
+<h3>Output</h3>
+<p>This code will output two energies corresponding to the noise-free VQE routine and the extrapolated energy from the ZNE routine: <code>[ideal_energy, zne_energy]</code> (<code>list(float)</code>).</p>
+<p>If your solution matches the correct one within the given tolerance specified in <code>check</code> (in this case it's a <code>0.01</code> relative error tolerance), the output will be <code>"Correct!"</code>. Otherwise, you will receive a <code>"Wrong answer"</code> prompt.</p>
+<p>Good luck!</p><style>
+mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+  min-height: 1px;
+  min-width: 1px;
+}
+
+mjx-container[jax="SVG"] > svg a {
+  fill: blue;
+  stroke: blue;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][display="true"][width="full"] {
+  display: flex;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line], svg[data-table] > g > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame], svg[data-table] > g > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed, svg[data-table] > g > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted, svg[data-table] > g > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > g > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] {
+  stroke-width: 3;
+}
+</style></div></div>
